@@ -1,0 +1,160 @@
+﻿@inject Blog.Web.AppSupport.ISessionManager SessionManager
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Microsoft.Extensions.Configuration.IConfiguration configuration
+@{
+    string queryReturnUrl = HttpContextAccessor.HttpContext.Request.Query["returnUrl"].ToString();
+    string returnUrl = string.IsNullOrEmpty(queryReturnUrl) ? HttpContextAccessor.HttpContext.Request.Path.ToString() : queryReturnUrl;
+    bool closeComment = configuration["AppSettings:CloseComment"] != null && bool.Parse(configuration["AppSettings:CloseComment"]);
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <meta name="keywords" content="@(ViewData["Keywords"] == null ? "不落阁,博客,DotNet" : ViewData["Keywords"])">
+    <meta name="description" content="@(ViewData["Description"] == null ? "不落阁是一个.NET程序员的个人博客，分享Web前端、.NET开发、微信开发等原创文章，分享作者的开源作品，代码片段，使广大开发者从中获益。" : ViewData["Description"])">
+    <environment include="Development">
+        <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/css/site.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/layui/css/layui.css" rel="stylesheet" asp-append-version="true" />
+        <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+              asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css"
+              asp-fallback-test-class="fa" asp-fallback-test-property="display" asp-fallback-test-value="inline-block" />
+        <link href="~/css/site.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+    <link href="~/css/site-animate.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/site-media.css" rel="stylesheet" asp-append-version="true" />
+    <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet" />
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?c8f5bbe9b65f49953b0dc30167e20891";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <link href="~/css/blog-pace.css" rel="stylesheet" asp-append-version="true" />
+    <script data-pace-options='{ "ajax": false ,"eventLag": false}' src="~/js/pace.min.js"></script>
+</head>
+<body>
+    <nav class="blog-nav layui-header">
+        <div class="layui-container">
+            @if (User.Identity.IsAuthenticated)
+            {
+                var currUser = SessionManager.CurrUser;
+                <span class="blog-user">
+                    <a href="/user/logout?returnUrl=@returnUrl">
+                        <img src="@currUser.Avatar" alt="@currUser.Name" title="@currUser.Name" />
+                    </a>
+                </span>
+            }
+            else
+            {
+                <a href="/user/login?provider=QQ&returnUrl=@returnUrl" class="blog-user">
+                    <i class="fa fa-qq"></i>
+                </a>
+            }
+            <a class="blog-logo" href="@Url.Action("index","home")">不落阁</a>
+            <ul class="blog-nav-list" lay-filter="nav">
+                <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Home" ? " layui-this" : "")">
+                    <a href="@Url.Action("index","home")"><i class="fa fa-home fa-fw"></i>&nbsp;网站首页</a>
+                </li>
+                <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Article" ? " layui-this" : "")">
+                    <a href="/article/all"><i class="fa fa-book fa-fw"></i>&nbsp;学海无涯</a>
+                </li>
+                <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Footprint" ? " layui-this" : "")">
+                    <a href="/footprint/timeline"><i class="fa fa-snowflake-o fa-fw"></i>&nbsp;点点滴滴</a>
+                </li>
+                <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Production" ? " layui-this" : "")">
+                    <a href="@Url.Action("index","production")"><i class="fa fa-th-large fa-fw"></i>&nbsp;个人作品</a>
+                </li>
+                @if (!closeComment)
+                {
+                    <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Comment" ? " layui-this" : "")">
+                        <a href="/comment"><i class="fa fa-comments fa-fw"></i>&nbsp;留言交流</a>
+                    </li>
+                }
+                <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "About" ? " layui-this" : "")">
+                    <a href="@Url.Action("index","about")"><i class="fa fa-info fa-fw"></i>&nbsp;关于本站</a>
+                </li>
+            </ul>
+            <a class="blog-navicon" href="javascript:;">
+                <i class="fa fa-navicon"></i>
+            </a>
+        </div>
+    </nav>
+    <div class="blog-body">
+        @RenderBody()
+    </div>
+    <footer class="blog-footer">
+        <p><a href="javascript:layer.msg('正在制作')">文章归档</a><a href="javascript:layer.msg('正在制作')">网站地图</a><a href="http://sighttp.qq.com/authd?IDKEY=2167096a0e422402c1aed4ff61d3a377f190a83ac69aa30a" target="_blank">联系作者</a><a href="javascript:layer.msg('正在制作')">小额赞赏</a></p>
+        <p><span>Powered by .NET Core 3.0</span><span>&copy;2017 - @(DateTime.Now.Year)</span><a href="//www.leo96.com">leo96.com</a><span>版权所有</span><a href="javascript:;" target="_blank">蜀ICP备16029915号-4</a></p>
+    </footer>
+    <!--侧边导航-->
+    <ul class="layui-nav layui-nav-tree layui-nav-side blog-nav-left layui-hide" lay-filter="nav">
+        <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Home" ? " layui-this" : "")">
+            <a href="@Url.Action("index","home")"><i class="fa fa-home fa-fw"></i>&nbsp;网站首页</a>
+        </li>
+        <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Article" ? " layui-this" : "")">
+            <a href="/article/all"><i class="fa fa-book fa-fw"></i>&nbsp;学海无涯</a>
+        </li>
+        <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Footprint" ? " layui-this" : "")">
+            <a href="/footprint/timeline"><i class="fa fa-snowflake-o fa-fw"></i>&nbsp;点点滴滴</a>
+        </li>
+        <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Production" ? " layui-this" : "")">
+            <a href="@Url.Action("index","production")"><i class="fa fa-th-large fa-fw"></i>&nbsp;个人作品</a>
+        </li>
+        @if (!closeComment)
+        {
+            <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "Comment" ? " layui-this" : "")">
+                <a href="/comment"><i class="fa fa-comments fa-fw"></i>&nbsp;留言交流</a>
+            </li>
+        }
+        <li class="layui-nav-item @(ViewData["currentPage"].ToString() == "About" ? " layui-this" : "")">
+            <a href="@Url.Action("index","about")"><i class="fa fa-info fa-fw"></i>&nbsp;关于本站</a>
+        </li>
+    </ul>
+    <!--遮罩-->
+    <div class="blog-mask animated layui-hide"></div>
+    <!--js-->
+    @if (User.Identity.IsAuthenticated)
+    {
+        <script>
+            layui.cache.user = {
+                id: Number('@SessionManager.CurrUser.Id')
+                , name: '@SessionManager.CurrUser.Name'
+                ,avatar:'@SessionManager.CurrUser.Avatar'
+            }
+        </script>
+    }
+    <environment include="Development">
+        <script src="https://cdn.bootcss.com/scrollReveal.js/3.3.6/scrollreveal.js"></script>
+        <script src="~/js/site.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdn.bootcss.com/scrollReveal.js/3.3.6/scrollreveal.min.js"></script>
+        <script src="~/js/site.min.js"></script>
+    </environment>
+    <!--自动提交-->
+    <script>
+        (function () {
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+</body>
+</html>

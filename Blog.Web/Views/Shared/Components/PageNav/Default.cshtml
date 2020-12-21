@@ -1,0 +1,76 @@
+﻿@{
+    Blog.Web.Models.PageParam pageParam = ViewData["params"] as Blog.Web.Models.PageParam;
+    string urlFormat = ViewData["urlFormat"].ToString();
+}
+@using Blog.Web.AppSupport
+@if (pageParam.TotalPage > 1)
+{
+    <div class="blog-pagebox">
+        <div class="laypage-main">
+            @if (pageParam.PageIndex != 0)
+            {
+                <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.PageIndex-1)" class="laypage-prev">上一页</a>
+            }
+            @if (pageParam.PageIndex >= 4)
+            {
+                <a href="@PageNavHelper.PageUrl(urlFormat,-1)" class="laypage-first" title="首页">首页</a>
+                <span>…</span>
+                @if (pageParam.TotalPage - pageParam.PageIndex >= 4)
+                {
+                    <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.PageIndex - 2)">@(pageParam.PageIndex - 1)</a>
+                    <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.PageIndex - 1)">@pageParam.PageIndex</a>
+                }
+                else
+                {
+                    for (int i = 0; i <= 4 - (pageParam.TotalPage - pageParam.PageIndex); i++)
+                    {
+                        <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.TotalPage - 4 + i - 1)">@(pageParam.TotalPage - 4 + i)</a>
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < pageParam.PageIndex; i++)
+                {
+                    if (i == 0)
+                    {
+                        <a href="@PageNavHelper.PageUrl(urlFormat,-1)">@(i + 1)</a>
+                    }
+                    else
+                    {
+                        <a href="@PageNavHelper.PageUrl(urlFormat,i)">@(i + 1)</a>
+                    }
+                }
+            }
+            <span class="laypage-curr">@(pageParam.PageIndex + 1)</span>
+            @if (pageParam.PageIndex <= pageParam.TotalPage - 4 && pageParam.TotalPage != 4)
+            {
+                @if (pageParam.PageIndex >= 4)
+                {
+                    <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.PageIndex + 1)">@(pageParam.PageIndex + 2)</a>
+                    <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.PageIndex + 2)">@(pageParam.PageIndex + 3)</a>
+                }
+                else
+                {
+                    for (int i = 1; i <= 4 - pageParam.PageIndex; i++)
+                    {
+                        <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.PageIndex + i)">@(pageParam.PageIndex + i + 1)</a>
+                    }
+                }
+                <span>…</span>
+                <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.TotalPage - 1)" class="laypage-last" title="尾页">尾页</a>
+            }
+            else
+            {
+                for (int i = pageParam.PageIndex + 1; i < pageParam.TotalPage; i++)
+                {
+                    <a href="@PageNavHelper.PageUrl(urlFormat,i)">@(i + 1) </a>
+                }
+            }
+            @if (pageParam.PageIndex + 1 != pageParam.TotalPage)
+            {
+                <a href="@PageNavHelper.PageUrl(urlFormat,pageParam.PageIndex+1)" class="laypage-next">下一页</a>
+            }
+        </div>
+    </div>
+}

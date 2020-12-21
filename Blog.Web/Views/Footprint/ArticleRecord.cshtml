@@ -1,0 +1,103 @@
+﻿@model List<IGrouping<int, Blog.EntityFramework.Article>>
+@{
+    ViewData["Title"] = "文章归档 - 不落阁";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/article-record.css" rel="stylesheet" />
+<div class="layui-container">
+    <blockquote class="layui-elem-quote sitemap shadow">
+        <i class="layui-icon">&#xe715;</i>
+        <span class="layui-breadcrumb" lay-separator=">">
+            <a href="/">首页</a>
+            <a><cite>文章归档</cite></a>
+        </span>
+    </blockquote>
+    <div class="blog-nav-two shadow">
+        <div class="layui-breadcrumb" lay-separator="|">
+            <a href="/footprint/timeline"><span>轻言细语</span></a>
+            <a href="/footprint/articlerecord" class="selected"><span>文章归档</span></a>
+            <a href="/footprint/note"><span>笔记标签</span></a>
+        </div>
+    </div>
+    <div class="blog-panel">
+        <div class="layui-row">
+            <div class="layui-hide-xs layui-col-md2" style="margin:10px 0">
+                <ul class="article-record-title">
+                    @{ bool selected = true;}
+                    @foreach (var item in Model.OrderByDescending(s => s.Key))
+                    {
+                        @foreach (var item2 in item.GroupBy(s => s.CreateTime.Month).OrderByDescending(s => s.Key))
+                        {
+                            <li class="@(selected ? "selected" : "")"><a href="#@(item.Key)@(item2.Key)">@(item.Key)年@(item2.Key)月</a></li>
+                            selected = false;
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="layui-col-xs12 layui-col-md10">
+                <div class="article-record-content">
+                    @{ bool show = true;}
+                    @foreach (var item in Model.OrderByDescending(s => s.Key))
+                    {
+                        @foreach (var item2 in item.GroupBy(s => s.CreateTime.Month).OrderByDescending(s => s.Key))
+                        {
+                            <div class="article-record-item @(show ? "layui-show" : "")">
+                                <h4><a class="datenav" id="@(item.Key)@(item2.Key)">@(item.Key)年@(item2.Key)月</a></h4>
+                                <ul>
+                                    @foreach (var article in item2.OrderByDescending(s => s.CreateTime))
+                                    {
+                                        <li><span class="layui-badge layui-bg-black" style="margin-right:8px;">@article.CreateTime.ToString("MM月dd日")</span><a href="/article/detail/@article.Id">@article.Title</a></li>
+                                    }
+                                </ul>
+                            </div>
+                            show = false;
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<environment include="Development">
+    <script src="~/lib/layui/layui.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="~/lib/layui/layui.js" asp-append-version="true"></script>
+</environment>
+
+<script>
+    layui.use('jquery', function () {
+        var $ = layui.jquery;
+        var i, t;
+        $(function () {
+            $('.article-record-title li').on('click', function () {
+                var self = this;
+                $(self).addClass('selected').siblings().removeClass('selected');
+                clearTimeout(t);
+                clearInterval(i);
+                $('.datenav').removeClass('highlight');
+                highlight(self);
+                i = setInterval(function () {
+                    highlight(self);
+                }, 600);
+                t = setTimeout(function () {
+                    clearInterval(i);
+                }, 1200);
+
+                $("html, body").animate({
+                    scrollTop: $($(self).children().attr("href")).offset().top + -100 + "px"
+                }, {
+                        duration: 400,
+                        easing: "swing"
+                    });
+            });
+            function highlight(elem) {
+                var target = $(elem).children().text().replace('年', '').replace('月', '');
+                $('#' + target).addClass('highlight');
+                setTimeout(function () {
+                    $('#' + target).removeClass('highlight');
+                }, 300);
+            }
+        });
+    });
+</script>

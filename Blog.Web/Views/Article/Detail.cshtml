@@ -1,0 +1,526 @@
+﻿@model Blog.Web.Models.ArticleDetailModel
+@{
+    ViewData["Title"] = $"{Model.Article.Title} - 不落阁";
+    ViewData["Description"] = Model.Article.Abstract;
+    ViewData["Keywords"] = Model.Article.Keywords;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hasMusic = Model.Article.ArticleMusics.Count > 0;
+}
+<link href="~/css/article-detail.min.css" rel="stylesheet" asp-append-version="true" />
+<link href="~/css/wangEditor.min.css" rel="stylesheet" asp-append-version="true" />
+<link href="~/css/prettify.min.css" rel="stylesheet" asp-append-version="true" />
+@if (hasMusic)
+{
+    <link href="~/lib/APlayer/APlayer.min.css" rel="stylesheet" />
+}
+
+<div class="layui-container">
+    <blockquote class="layui-elem-quote sitemap shadow">
+        <i class="layui-icon">&#xe715;</i>
+        <span class="layui-breadcrumb" lay-separator=">">
+            <a href="/">首页</a>
+            <a href="/article/all">学海无涯</a>
+            <a href="/article/cate/@Model.Article.CategoryId">@Model.Article.Category.Name</a>
+            <a><cite>@Model.Article.Title</cite></a>
+        </span>
+    </blockquote>
+    <div class="layui-row layui-col-space15 clearfix">
+        <div class="layui-col-md8 left">
+            <div data-fontsize="14" class="article-detail shadow">
+                <div class="article-tool">
+                    <div style="float:left;">
+                        <button class="layui-btn layui-btn-primary layui-btn-xs" title="发布日期">
+                            @Model.Article.CreateTime.ToString("yyyy年MM月dd日")
+                        </button>
+                        <div class="layui-btn-group">
+                            <button class="layui-btn layui-btn-primary layui-btn-xs" title="浏览">
+                                <i class="fa fa-eye fa-fw"></i><span style="margin-left:3px;">@Model.Article.ReadCount</span>
+                            </button>
+                            <button class="layui-btn layui-btn-primary layui-btn-xs" title="评论">
+                                <i class="fa fa-comments fa-fw"></i><span style="margin-left:3px;">@Model.Article.RemarkCount</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tool-box">
+                        @if (hasMusic)
+                        {
+                            <div class="layui-btn-group">
+                                <button class="layui-btn layui-btn-primary layui-btn-xs" title="静音">
+                                    <i class="fa fa-volume-up fa-fw"></i>
+                                </button>
+                            </div>
+                        }
+                        <div class="layui-btn-group layui-hide-xs">
+                            <button class="layui-btn layui-btn-primary layui-btn-xs" title="字体缩小">
+                                <i class="fa fa-minus fa-fw"></i>
+                            </button>
+                            <button class="layui-btn layui-btn-primary layui-btn-xs" title="字体还原">
+                                <i class="fa fa-undo fa-fw"></i>
+                            </button>
+                            <button class="layui-btn layui-btn-primary layui-btn-xs" title="字体放大">
+                                <i class="fa fa-plus fa-fw"></i>
+                            </button>
+                        </div>
+                        <div class="layui-btn-group layui-hide-xs">
+                            <button class="layui-btn layui-btn-primary layui-btn-xs" title="展开阅读">
+                                <i class="fa fa-arrows-h fa-fw"></i>
+                            </button>
+                            <button class="layui-btn layui-btn-primary layui-btn-xs" title="全屏阅读">
+                                <i class="fa fa-arrows-alt fa-fw"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="article-detail-title">
+                    @Model.Article.Title
+                </div>
+                <div class="article-detail-abstract">
+                    <span class="layui-badge">摘要</span>
+                    <span id="abstract">@Model.Article.Abstract</span>
+                </div>
+                <div class="article-detail-content w-e-text">
+                    @Html.Raw(Model.Article.Content)
+                    <div class="article-detail-copyright">
+                        <p>版权声明：本文由<a href="/" style="color:#1E9FFF;margin:0 5px;">不落阁</a>原创出品，转载请注明出处！</p>
+                        <p>本文链接：<a href="/article/detail/@(Model.Article.Id)">http://www.leo96.com/article/detail/@(Model.Article.Id)</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="article-component">
+                <div class="component-box">
+                    <a href="javascript:;" class="praise" blog-event="praise"><i class="fa fa-thumbs-up fa-fw"></i>点赞（<span id="praiseCnt">@Model.Article.PraiseCount</span>）</a>
+                    <a href="javascript:;" class="reword" blog-event="reword">赏</a>
+                    <a href="javascript:;" class="share" blog-event="share"><i class="fa fa-share-alt fa-fw"></i>分享（<span id="shareCnt">@Model.Article.ShareCount</span>）</a>
+                </div>
+            </div>
+
+            @if (hasMusic)
+            {
+                <div class="article-music">
+                    <div style="border-bottom:1px solid #ddd;">
+                        <span class="layui-badge">本文配乐</span>
+                    </div>
+                    <div id="aplayer"></div>
+                </div>
+            }
+
+            <div class="blog-card blog-card-padding shadow">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-bottom:0">
+                    <legend>来说两句吧</legend>
+                    <div class="layui-field-box">
+                        <form class="layui-form blog-editor" action="">
+                            <input type="hidden" id="hidArticleId" name="ArticleId" value="@Model.Article.Id" />
+                            <div class="layui-form-item">
+                                @if (Model.Article.AllowRemark)
+                                {
+                                    <textarea name="EditorContent" lay-verify="content" id="remarkEditor" placeholder="请输入内容" class="layui-textarea layui-hide"></textarea>
+                                }
+                                else
+                                {
+                                    <div style="border:1px solid #f2f2f2;" class="emptybox">
+                                        <p><i style="font-size:50px;color:#5fb878" class="layui-icon">&#x1007;</i></p>
+                                        <p>该文章已禁止评论</p>
+                                    </div>
+                                }
+                            </div>
+                            <div class="layui-form-item">
+                                <button class="layui-btn @(Model.Article.AllowRemark ? " " : " layui-btn-disabled")" lay-submit="formRemark" lay-filter="formRemark">提交评论</button>
+                            </div>
+                        </form>
+                    </div>
+                </fieldset>
+                <div class="blog-card-title">最新评论</div>
+                @if (Model.Article.Remarks.Count <= 0)
+                {
+                    <div class="emptybox">
+                        <p><i style="font-size:50px;color:#5fb878" class="layui-icon">&#xe705;</i></p>
+                        <p>暂无评论，大侠不妨来一发？</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="blog-comment">
+                        @foreach (var item in Model.Article.Remarks)
+                        {
+                            <li>
+                                <div class="comment-parent">
+                                    <a name="remark-@item.Id"></a>
+                                    <img src="@item.User.Avatar" alt="@item.User.Name" />
+                                    <div class="info">
+                                        <span class="username">@item.User.Name</span>
+                                    </div>
+                                    <div class="content">
+                                        @Html.Raw(item.Content)
+                                    </div>
+                                    <p class="info info-footer"><span class="time">@item.CreateTime.ToString("yyyy-MM-dd HH:mm")</span><a href="javascript:;" class="btn-reply" data-targetid="@item.UserId" data-targetname="@item.User.Name">回复</a></p>
+                                </div>
+                                @if (item.RemarkReplys.Count > 0)
+                                {
+                                    <hr />
+                                }
+                                @foreach (var reply in item.RemarkReplys)
+                                {
+                                    <div class="comment-child">
+                                        <a name="reply-@reply.Id"></a>
+                                        <img src="@reply.User.Avatar" alt="@reply.User.Name" />
+                                        <div class="info">
+                                            <span class="username">@reply.User.Name</span>
+                                            <span style="padding-right:0;margin-left:-5px;">回复</span>
+                                            <span class="username">@reply.TargetUser.Name</span>
+                                            <span>@reply.Content</span>
+                                        </div>
+                                        <p class="info"><span class="time">@reply.CreateTime.ToString("yyyy-MM-dd HH:mm")</span><a href="javascript:;" class="btn-reply" data-targetid="@reply.UserId" data-targetname="@reply.User.Name">回复</a></p>
+                                    </div>
+                                }
+                                <div class="replycontainer layui-hide">
+                                    <form class="layui-form" action="">
+                                        <input type="hidden" name="remarkId" value="@item.Id" />
+                                        <input type="hidden" name="targetUserId" value="0" />
+                                        <input type="hidden" name="articleId" value="@Model.Article.Id" />
+                                        <div class="layui-form-item">
+                                            @if (Model.Article.AllowReply)
+                                            {
+                                                <textarea name="replyContent" lay-verify="replyContent" placeholder="请输入回复内容" class="layui-textarea" style="min-height:80px;"></textarea>
+                                            }
+                                            else
+                                            {
+                                                <textarea name="replyContent" class="layui-textarea" style="min-height:80px;" disabled></textarea>
+                                            }
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <button class="layui-btn layui-btn-xs @(Model.Article.AllowReply ? " " : " layui-btn-disabled")" lay-submit="formReply" lay-filter="formReply">@(Model.Article.AllowReply ? "提交" : "已禁止回复")</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+        <div class="layui-col-md4 right">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-sm6 layui-col-md12 padding0">
+                    <div class="article-category shadow">
+                        <div class="article-category-title">分类导航</div>
+                        @foreach (var item in Model.ArticleCategorys)
+                        {
+                            <a href="/article/cate/@item.Id">@item.Name</a>
+                        }
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="layui-col-sm6 layui-col-md12">
+                    <div class="blog-card shadow">
+                        <div class="blog-card-title">相似文章</div>
+                        <ul class="blog-card-ul">
+                            @if (Model.SimilarArticles.Count <= 0)
+                            {
+                                <li>
+                                    <div class="emptybox">
+                                        <p><i style="font-size:50px;color:#5fb878" class="layui-icon">&#xe69c;</i></p>
+                                        <p>暂时没有任何数据</p>
+                                    </div>
+                                </li>
+                            }
+                            @for (int i = 0; i < Model.SimilarArticles.Count; i++)
+                            {
+                                var item = Model.SimilarArticles[i];
+                                <li>
+                                    <span class="layui-badge @(i < 3 ? " " : " layui-bg-blue")">@(i + 1)</span><a href="@Url.Action("detail", "article" , new { Id=item.Id })" title="@item.Title">@item.Title</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-col-sm6 layui-col-md12">
+                    <div class="blog-card shadow sr-rightmodule">
+                        <div class="blog-card-title">随便看看</div>
+                        <ul class="blog-card-ul">
+                            @if (Model.RandomArticles.Count <= 0)
+                            {
+                                <li>
+                                    <div class="emptybox">
+                                        <p><i style="font-size:50px;color:#5fb878" class="layui-icon">&#xe69c;</i></p>
+                                        <p>暂时没有任何数据</p>
+                                    </div>
+                                </li>
+                            }
+                            @for (int i = 0; i < Model.RandomArticles.Count; i++)
+                            {
+                                var item = Model.RandomArticles[i];
+                                <li>
+                                    <span class="layui-badge @(i < 3 ? " " : " layui-bg-blue")">@(i + 1)</span><a href="@Url.Action("detail", "article" , new { Id=item.Id })" title="@item.Title">@item.Title</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!--右边悬浮 平板或手机设备显示-->
+            <div class="category-toggle"><i class="fa fa-chevron-left"></i></div>
+        </div>
+    </div>
+</div>
+<environment include="Development">
+    <script src="~/lib/layui/layui.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="~/lib/layui/layui.js" asp-append-version="true"></script>
+</environment>
+<script src="~/js/prettify.js" asp-append-version="true"></script>
+
+@if (hasMusic)
+{
+    <script src="~/lib/APlayer/APlayer.min.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        var audio = new Array();
+        @{
+    foreach (var item in Model.Article.ArticleMusics)
+    {
+<text>
+        audio.push({
+            name: '@Html.Raw(item.Music.Name)',
+            artist: '@Html.Raw(item.Music.Artist)',
+            url: '@Html.Raw(item.Music.Url)',
+            cover: '@Html.Raw(item.Music.Cover)',
+            theme: '@item.Music.Theme'
+        });
+            </text>
+}
+}
+        const ap = new APlayer({
+            container: document.getElementById('aplayer'),
+            autoplay: true,
+            volume: 0.5,
+            audio: audio
+        });
+    </script>
+}
+
+<script type="text/javascript">
+    var shareIndex, $;
+
+    prettyPrint();
+
+    layui.use(['layer', 'form'], function () {
+        $ = layui.$;
+        var form = layui.form
+            , device = layui.device();
+
+
+        //文章顶部工具栏按钮点击事件
+        $('.tool-box button').on('click', function () {
+            var title = $(this).attr('title');
+            switch (title) {
+                case '全屏阅读':
+                    var content = $('.article-detail').prop("outerHTML");
+                    layer.open({
+                        title: false,
+                        type: 1,
+                        content: content,
+                        closeBtn: 0,
+                        scrollbar: false,
+                        area: ['100vw', '100vh'],
+                        success: function (layero, index) {
+                            $(layero).find('.article-tool').html('<div class="tool-box"><div class="layui-btn-group"><button class="layui-btn layui-btn-primary layui-btn-xs" title="关闭全屏"><i class="fa fa-compress fa-fw"></i></button></div></div>');
+                            $(layero).find('.article-tool button').on('click', function () {
+                                layer.close(index);
+                            });
+                        }
+                    });
+                    break;
+                case '展开阅读':
+                    $('.right').hide();
+                    $('.left').css({
+                        'width': '100%'
+                    });
+                    $(this).attr('title', '收缩阅读');
+                    $(this).html('<i class="fa fa-compress fa-fw"></i>');
+                    break;
+                case '收缩阅读':
+                    $('.right').show();
+                    $('.left').css('width', '');
+                    $(this).attr('title', '展开阅读');
+                    $(this).html('<i class="fa fa-arrows-h fa-fw"></i>');
+                    break;
+                case '字体缩小':
+                    var fontsize = Number($('.article-detail').data('fontsize'));
+                    fontsize = fontsize - 1;
+                    if (fontsize < 12) fontsize = 12;
+                    $('.article-detail').data('fontsize', fontsize);
+                    $('.article-detail-abstract,.article-detail-content').css('font-size', fontsize + 'px');
+                    break;
+                case '字体还原':
+                    $('.article-detail').data('fontsize', 14);
+                    $('.article-detail-abstract,.article-detail-content').css('font-size', '');
+                    break;
+                case '字体放大':
+                    var fontsize = Number($('.article-detail').data('fontsize'));
+                    fontsize = fontsize + 1;
+                    if (fontsize > 20) fontsize = 20;
+                    $('.article-detail').data('fontsize', fontsize);
+                    $('.article-detail-abstract,.article-detail-content').css('font-size', fontsize + 'px');
+                    break;
+                case '静音':
+                    $(this).attr('title', '开启');
+                    $(this).html('<i class="fa fa-volume-off fa-fw"></i>');
+                    ap.volume(0, false);
+                    break;
+                case '开启':
+                    $(this).attr('title', '静音');
+                    $(this).html('<i class="fa fa-volume-up fa-fw"></i>');
+                    ap.volume(0.5, false);
+                    break;
+                default:
+            }
+        });
+
+        //回复按钮点击事件
+        $('.btn-reply').on('click', function () {
+            var targetId = $(this).data('targetid')
+                , targetName = $(this).data('targetname')
+                , $container = $(this).parent('p').parent().siblings('.replycontainer');
+            if ($(this).text() == '回复') {
+                $container.find('textarea').attr('placeholder', '回复【' + targetName + '】');
+                $container.removeClass('layui-hide');
+                $container.find('input[name="targetUserId"]').val(targetId);
+                $(this).parents('.blog-comment li').find('.btn-reply').text('回复');
+                $(this).text('收起');
+            } else {
+                $container.addClass('layui-hide');
+                $container.find('input[name="targetUserId"]').val(0);
+                $(this).text('回复');
+            }
+        });
+
+        //监听留言回复提交
+        form.on('submit(formReply)', function (data) {
+            if ($(data.elem).hasClass('layui-btn-disabled')) {
+                return false;
+            }
+            var index = layer.load(1);
+            $.ajax({
+                type: 'post',
+                url: '/api/article/reply',
+                data: data.field,
+                success: function (res) {
+                    layer.close(index);
+                    if (res.code === 1) {
+                        layer.msg(res.msg, { icon: 6 });
+                        setTimeout(function () {
+                            location.reload(true);
+                        }, 500);
+                    } else {
+                        if (res.msg != undefined) {
+                            layer.msg(res.msg, { icon: 5 });
+                        } else {
+                            layer.msg('程序异常，请重试或联系作者', { icon: 5 });
+                        }
+                    }
+                },
+                error: function (e) {
+                    layer.close(index);
+                    layer.msg("请求异常", { icon: 2 });
+                }
+            });
+            return false;
+        });
+        var events = {
+            //分享
+            share: function () {
+                shareIndex = layer.open({
+                    type: 1,
+                    shade: 0.6,
+                    shadeClose: true,
+                    area: ['auto', '50px'],
+                    resize: false,
+                    skin: 'share',
+                    closeBtn: 0,
+                    anim: 1,
+                    title: false, //不显示标题
+                    content: $('.bdsharebuttonbox')
+                });
+            }
+
+            //点赞
+            , praise: function () {
+                var localdata = layui.data('blog')
+                    , articleId = $('#hidArticleId').val()
+                    , self = this;
+                if (localdata['praise' + articleId]) {
+                    layer.tips('你已点过赞了，若收获颇大，可打赏作者！^_^', self, { tips: 1, time: 2000 });
+                    return;
+                }
+                $.post('/api/article/praiseorshare', { articleId: articleId, type: 'praise' }, function (res) {
+                    if (res.code === 1) {
+                        layui.data('blog', {
+                            key: 'praise' + $('#hidArticleId').val()
+                            , value: true
+                        });
+                        //点赞+1
+                        var cnt = Number($('#praiseCnt').text()) + 1;
+                        $('#praiseCnt').text(cnt);
+                        layer.tips('Thank you ^_^', self, { tips: 1, time: 2000 });
+                    } else {
+                        layer.msg('点赞出错啦！0.0');
+                    }
+                });
+            }
+
+            //打赏
+            , reword: function () {
+                layer.tab({
+                    area: ['330px', '373px'],
+                    shade: 0.6,
+                    tab: [{
+                        title: '微信',
+                        content: '<img style="width:330px;height:330px;" src="/images/wx_reward.png" />'
+                    }, {
+                        title: '支付宝',
+                        content: '<img style="width:330px;height:330px;" src="/images/ali_reward.jpg" />'
+                    }]
+                });
+
+            }
+        };
+
+        $('*[blog-event]').on('click', function () {
+            var eventName = $(this).attr('blog-event');
+            events[eventName] && events[eventName].call(this);
+        });
+
+        $('*[blog-event="reword"]').on('mouseover', function () {
+            layer.tips('一元足以感动我 ^_^', this, { tips: 1, time: 2000 });
+        });
+    });
+</script>
+
+<div class="bdsharebuttonbox" data-tag="share_1" style="display:none;">
+    <a class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+    <a class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+    <a class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+</div>
+<!--百度分享-->
+<script>
+    window._bd_share_config = {
+        common: {
+            bdPic: '@Model.Article.Cover',
+            onAfterClick: function (cmd) {
+                var articleId = $('#hidArticleId').val();
+                if (cmd === 'weixin') {
+                    layer.close(shareIndex);
+                    $.post('/api/article/praiseorshare', { articleId: articleId, type: 'share' });
+                    var cnt = Number($('#shareCnt').text()) + 1;
+                    $('#shareCnt').text(cnt);
+                }
+            }
+        },
+        share: [{
+            "tag": "share_1",
+            "bdSize": "32"
+        }]
+    }
+    with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = '/static/api/js/share.js?cdnversion=' + ~(-new Date() / 36e5)];
+</script>

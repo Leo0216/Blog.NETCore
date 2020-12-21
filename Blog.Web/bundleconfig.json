@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "wwwroot/js/comment.min.js",
+    "inputFiles": [
+      "wwwroot/js/comment.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/comment.min.css",
+    "inputFiles": [
+      "wwwroot/css/comment.css"
+    ]
+  }
+]

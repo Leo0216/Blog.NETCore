@@ -1,0 +1,163 @@
+﻿@model Blog.Web.Models.AboutModel
+@{
+    ViewData["Title"] = "关于本站 - 不落阁";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/about.min.css" rel="stylesheet" />
+
+<div class="layui-container">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12">
+            <blockquote class="layui-elem-quote sitemap shadow" style="margin-bottom:0px;">
+                <i class="layui-icon">&#xe715;</i>
+                <span class="layui-breadcrumb" lay-separator=">">
+                    <a href="/">首页</a>
+                    <a><cite>关于本站</cite></a>
+                </span>
+            </blockquote>
+        </div>
+        <div class="layui-col-xs12">
+            <ul class="blog-nav-follow">
+                <li class="current"><a href="#author">关于作者</a></li>
+                <li><a href="#site">关于网站</a></li>
+                <li><a href="#friend">友情链接</a></li>
+                <li><a href="#reward">小额赞赏</a></li>
+            </ul>
+            <div class="blog-about-container">
+                <span id="author" class="anchor"></span>
+                <div class="section">
+                    <div class="section-title">
+                        <span class="layui-badge">关于作者</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="author-bg">
+                            <div class="bg-box">
+                                <img class="bg" src="~/images/about_bg4.jpg" />
+                                <div class="mask"></div>
+                            </div>
+                            <div class="author-intro">
+                                <img src="~/images/Leo.jpg" alt="Leo" />
+                                <h2>Leo</h2>
+                                <h4>96年生人，.NET工程师，略懂前端！</h4>
+                            </div>
+                        </div>
+                        <div class="text-content">
+                            <p>Hello, ladies and gentlemen. I am the master of the blog. My nickname is Leo. Born on February 14, 1996.</p>
+                            <br />
+                            <p>咳咳咳...不装逼了，我的英文水平估计就只会这几句。英文名Leo，是一名.NET开发工程师。创建本站纯属练手，同时记录自己学习过程，并与大家分享交流。</p>
+                            <br />
+                            <p>我出生于成都，现居成都，虽然成都是一座非常棒的城市，但是我喜欢到处旅行，对别的城市也是非常向往。</p>
+                            <br />
+                            <p>学编程这么久，没遇到过难题，自认为没什么是自己不会的，大概是因为天赋吧，总感觉学编程就像高中学物理数学那样得心应手，之所以自己还算不上大牛，可能就是时间问题吧。</p>
+                            <p style="text-align:right;padding-right:5px;font-size:24px;font-family:Cambria">—— By Leo</p>
+                        </div>
+                    </div>
+                </div>
+                <span id="site" class="anchor"></span>
+                <div class="section">
+                    <div class="section-title">
+                        <span class="layui-badge">关于网站</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="author-bg">
+                            <div class="bg-box">
+                                <img class="bg" src="~/images/about_bg2.jpg" />
+                                <div class="mask"></div>
+                            </div>
+                            <div class="author-intro">
+                                <img src="~/images/global/Logo_100.png" alt="不落阁" />
+                                <h2>不落阁</h2>
+                                <h4>Leo个人博客，记录成长，分享技术！</h4>
+                            </div>
+                        </div>
+                        <div class="text-content">
+                            <p>不落阁是纯手工打造，非第三方建站程序制作的网站，它后端程序使用的是.NET最新跨平台框架ASP.NET Core，前端则是Layui主导加各种插件组合而成。经历过一次大改，所以称作不落阁2.0。</p>
+                            <br />
+                            <p>不落阁将开源前端模板供大家使用，至于后端程序，作者也会慢慢开源，并在博客记录开发过程。此外，不落阁后台所使用的是作者另一作品LeoAdmin模板制作而成，LeoAdmin是一个响应式，单页面的后台管理系统前端模板，该套模板目前尚未公布。</p>
+                        </div>
+                    </div>
+                </div>
+                <span id="friend" class="anchor"></span>
+                <div class="section">
+                    <div class="section-title">
+                        <span class="layui-badge">友情链接</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="author-bg">
+                            <div class="bg-box">
+                                <img class="bg" src="~/images/about_bg3.jpg" />
+                                <div class="mask"></div>
+                            </div>
+                            <div class="author-intro">
+                                <img src="~/images/global/handshake.png" alt="友链互换" />
+                                <h2>友链互换</h2>
+                                <h4>
+                                    <i class="fa fa-close"></i>经常宕机&nbsp;
+                                    <i class="fa fa-close"></i>不合法规&nbsp;
+                                    <span class="layui-hide-xs"><i class="fa fa-close"></i>插边球站&nbsp;</span>
+                                    <span class="layui-hide-xs"><i class="fa fa-close"></i>红标报毒&nbsp;</span>
+                                    <i class="fa fa-check"></i>原创优先&nbsp;
+                                    <i class="fa fa-check"></i>技术优先
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="layui-row layui-col-space15" style="margin-top:5px;">
+                            @foreach (var item in Model.FriendLinks)
+                            {
+                                <div class="layui-col-lg3 layui-col-md4 layui-col-sm6">
+                                    <a href="@item.Link" target="_blank" class="friendlink-item">
+                                        <img src="@item.Favicon" alt="@item.Title" />
+                                        <h2>@item.Title</h2>
+                                        <p>@item.Domain</p>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <span id="reward" class="anchor"></span>
+                <div class="section">
+                    <div class="section-title">
+                        <span class="layui-badge">小额赞赏</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="author-bg">
+                            <div class="bg-box">
+                                <img class="bg" src="~/images/about_bg1.jpg" />
+                                <div class="mask"></div>
+                            </div>
+                            <div class="author-intro">
+                                <img src="~/images/global/reword.jpg" alt="小额赞赏" />
+                                <h2>小额赞赏</h2>
+                                <h4>
+                                    若本站内容对你有所帮助，还望不吝赞赏！
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="layui-row layui-col-space30" style="text-align:center;margin-top:5px">
+                            <div class="layui-col-sm6">
+                                <img style="width:300px;" src="/images/wx_reward.png">
+                                <p style="margin-top:10px;color:#FF5722;font-size:18px;">微信打赏</p>
+                            </div>
+                            <div class="layui-col-sm6">
+                                <img style="width:300px;" src="/images/ali_reward.jpg">
+                                <p style="margin-top:10px;color:#FF5722;font-size:18px;">支付宝打赏</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<environment include="Development">
+    <script src="~/lib/layui/layui.js"></script>
+    <script src="~/js/jquery.nav.js"></script>
+    <script src="~/js/about.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="~/lib/layui/layui.js" asp-append-version="true"></script>
+    <script src="~/js/jquery.nav.min.js" asp-append-version="true"></script>
+    <script src="~/js/about.min.js" asp-append-version="true"></script>
+</environment>
+

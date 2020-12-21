@@ -1,0 +1,117 @@
+﻿@model ZoneModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>博客助手</title>
+    <environment include="Development">
+        <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+        <link href="~/css/zone.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/layui/css/layui.css" rel="stylesheet" asp-append-version="true" />
+        <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+              asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css"
+              asp-fallback-test-class="fa" asp-fallback-test-property="display" asp-fallback-test-value="inline-block" />
+        <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+        <link href="~/css/zone.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <div class="main-panel animated">
+        <div class="bloghelper-head"><i class="fa fa-power-off fa-fw" title="退出博客助手"></i>博客助手</div>
+        <div class="bloghelper-body">
+            <div class="bloghelper-body-content layui-show">
+                <ul class="bloghelper-msg-list">
+                    <li data-type="pl">
+                        <img src="~/images/global/pinglun.png">
+                        <span>评论</span>
+                        <p>收纳评论回复消息通知</p>
+                        @if (Model.RemarkCount != 0)
+                        {
+                            <i>@Model.RemarkCount</i>
+                        }
+                    </li>
+                    <li data-type="ly">
+                        <img src="~/images/global/liuyan.png">
+                        <span>留言</span>
+                        <p>收纳留言回复消息通知</p>
+                        @if (Model.CommentCount != 0)
+                        {
+
+                            <i>@Model.CommentCount</i>
+                        }
+                    </li>
+                    <li data-type="xt">
+                        <img src="~/images/global/xitong.png">
+                        <span>系统</span>
+                        <p>收纳站内系统消息通知</p>
+                        @if (Model.SystemCount != 0)
+                        {
+
+                            <i>@Model.SystemCount</i>
+                        }
+                    </li>
+                </ul>
+            </div>
+            <div class="bloghelper-body-content">
+                <div style="padding:20px 10px">
+                    <i style="display:block;font-size:100px;color:#1DB0B8" class="layui-icon">&#xe69c;</i>
+                    <p style="margin-top:20px;font-size:18px;">该页面暂时不知道写啥</p>
+                </div>
+            </div>
+            <div class="bloghelper-body-content">
+                <div style="padding:20px 10px">
+                    <i style="display:block;font-size:100px;color:#1DB0B8" class="layui-icon">&#xe6af;</i>
+                    <p style="margin-top:20px;font-size:18px;">该页面显示收藏的文章</p>
+                </div>
+            </div>
+        </div>
+        <div class="bloghelper-foot">
+            <div class="box-flex">
+                <div class="flex selected">
+                    <i class="fa fa-comment-o fa-fw"></i>
+                    <p>消息</p>
+                </div>
+                <div class="flex">
+                    <i class="fa fa-cog fa-spin fa-fw"></i>
+                    <p>懵逼</p>
+                </div>
+                <div class="flex">
+                    <i class="fa fa-diamond fa-fw"></i>
+                    <p>常用</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script id="msgTpl" type="text/html">
+        <div class="bloghelper-head"><i class="fa fa-chevron-left fa-fw"></i>{{ d.title }}</div>
+        <ul class="msg-list">
+            {{#  layui.each(d.list, function(index, item){ }}
+            <li>
+                <p style="padding-bottom: 5px;color:#666;">{{ item.createTime }}</p>
+                {{ item.content }}
+            </li>
+            {{#  }); }}
+            {{#  if(d.list.length === 0){ }}
+            <li><span style="color:#666;">暂时没有收到任何消息</span></li>
+            {{#  } }}
+        </ul>
+    </script>
+    <environment include="Development">
+        <script src="~/lib/layui/layui.js"></script>
+        <script src="~/js/zone.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/layui/layui.js" asp-append-version="true"></script>
+        <script src="~/js/zone.min.js" asp-append-version="true"></script>
+    </environment>
+</body>
+</html>

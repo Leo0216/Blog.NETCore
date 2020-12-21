@@ -1,0 +1,89 @@
+﻿@model List<Blog.EntityFramework.Timeline>
+@{
+    ViewData["Title"] = "轻言细语 - 不落阁";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/timeline.css" rel="stylesheet" />
+<script src="~/js/modernizr.js"></script>
+
+<div class="layui-container">
+    <blockquote class="layui-elem-quote sitemap shadow">
+        <i class="layui-icon">&#xe715;</i>
+        <span class="layui-breadcrumb" lay-separator=">">
+            <a href="/">首页</a>
+            <a><cite>轻言细语</cite></a>
+        </span>
+    </blockquote>
+    <div class="blog-nav-two shadow">
+        <div class="layui-breadcrumb" lay-separator="|">
+            <a href="/footprint/timeline" class="selected"><span>轻言细语</span></a>
+            <a href="/footprint/articlerecord"><span>文章归档</span></a>
+            <a href="/footprint/note"><span>笔记标签</span></a>
+        </div>
+    </div>
+    <div class="blog-panel">
+        <section id="cd-timeline" class="cd-container">
+            @{ var index = 1; }
+            @foreach (var item in Model.OrderByDescending(s => s.CreateTime))
+            {
+                <div class="cd-timeline-block">
+                    @if (index == 1)
+                    {
+                        <div class="cd-timeline-img cd-picture">
+                            <img src="~/images/cd-icon-picture.svg" alt="Location">
+                        </div>
+                    }
+                    else if (index == 2)
+                    {
+                        <div class="cd-timeline-img cd-movie">
+                            <img src="~/images/cd-icon-movie.svg" alt="Location">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="cd-timeline-img cd-location">
+                            <img src="~/images/cd-icon-location.svg" alt="Location">
+                        </div>
+                    }
+                    <div class="cd-timeline-content">
+                        <h2>@item.Title</h2>
+                        <p>@item.Content</p>
+                        @if (!string.IsNullOrWhiteSpace(item.Link))
+                        {
+                            <a href="@item.Link" target="_blank" class="cd-read-more">阅读更多</a>
+                        }
+                        <span class="cd-date">@item.CreateTime.ToString("yyyy年MM月dd日")</span>
+                    </div>
+                </div>
+                index = index == 3 ? 1 : ++index;
+            }
+        </section>
+    </div>
+</div>
+<environment include="Development">
+    <script src="~/lib/layui/layui.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="~/lib/layui/layui.js" asp-append-version="true"></script>
+</environment>
+<script>
+    layui.use('jquery', function () {
+        var $ = layui.jquery;
+
+        $(function () {
+            var $timeline_block = $('.cd-timeline-block');
+            $timeline_block.each(function () {
+                if ($(this).offset().top > $(window).scrollTop() + $(window).height() * 0.75) {
+                    $(this).find('.cd-timeline-img, .cd-timeline-content').addClass('is-hidden');
+                }
+            });
+            $(window).on('scroll', function () {
+                $timeline_block.each(function () {
+                    if ($(this).offset().top <= $(window).scrollTop() + $(window).height() * 0.75 && $(this).find('.cd-timeline-img').hasClass('is-hidden')) {
+                        $(this).find('.cd-timeline-img, .cd-timeline-content').removeClass('is-hidden').addClass('bounce-in');
+                    }
+                });
+            });
+        });
+    });
+</script>

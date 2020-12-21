@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <environment include="Development">
+        <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/layui/css/layui.css" rel="stylesheet" asp-append-version="true" />
+        <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+              asp-fallback-href="~/lib/font-awesome/css/font-awesome.min.css"
+              asp-fallback-test-class="fa" asp-fallback-test-property="display" asp-fallback-test-value="inline-block" />
+        <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+    </environment>
+    <style>
+        * {
+            cursor: default;
+        }
+
+        body {
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        .blogzone-head {
+            background-color: #1DB0B8;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .blogzone-foot {
+            position: fixed;
+            z-index: 9999;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+        }
+
+        .box-flex {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .flex {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1 1 auto;
+            flex: 1 1 auto;
+        }
+
+            .flex .fa {
+                font-size: 20px;
+                margin: 0 auto 3px;
+            }
+
+            .flex p {
+                font-size: 12px;
+            }
+
+            .flex.selected {
+                color: #1DB0B8;
+            }
+    </style>
+</head>
+<body>
+    <div class="blogzone-head">个人中心</div>
+    <div class="blogzone-body">@RenderBody()</div>
+    <div class="blogzone-foot">
+        <div class="box-flex">
+            <div class="flex selected">
+                <i class="fa fa-comment-o fa-fw"></i>
+                <p>消息</p>
+            </div>
+            <div class="flex">
+                <i class="fa fa-cog fa-spin fa-fw"></i>
+                <p>懵逼</p>
+            </div>
+            <div class="flex">
+                <i class="fa fa-diamond fa-fw"></i>
+                <p>常用</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        layui.use(['layer'], function () {
+            var $ = layui.$;
+            $('.blogzone-foot .flex').on('click', function () {
+                $(this).addClass('selected').siblings().removeClass('selected');
+            });
+        });
+    </script>
+</body>
+</html>
